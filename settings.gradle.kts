@@ -13,6 +13,11 @@ dependencyResolutionManagement {
         mavenCentral()
 
     }
+    versionCatalogs {
+        create("libs") {
+            from(files("gradle/libraries.versions.toml"))
+        }
+    }
 }
 
 rootProject.name = ("compose-impression")
@@ -20,3 +25,4 @@ rootProject.name = ("compose-impression")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include("app")
+include(":impression")

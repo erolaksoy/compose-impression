@@ -1,15 +1,22 @@
+buildscript {
+    dependencies {
+        classpath(libs.agp)
+        classpath(libs.kgp)
+    }
+}
+
 plugins {
-    id("com.android.application") apply false
-    id("com.android.library") apply false
-    kotlin("android") apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
     alias(libs.plugins.detekt)
+    id("org.jetbrains.kotlin.android") version "1.8.20" apply false
 }
 
 allprojects {
     group = PUBLISHING_GROUP
 }
 
-val detektFormatting = libs.detekt.formatting
+private val detektFormatting = libs.detekt.formatting
 
 subprojects {
     apply {

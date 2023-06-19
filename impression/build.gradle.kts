@@ -1,6 +1,7 @@
 plugins {
-    id("com.android.application")
+    id("com.android.library")
     kotlin("android")
+    id("maven-publish")
 }
 
 android {
@@ -9,16 +10,13 @@ android {
     defaultConfig {
         minSdk = libs.versions.min.sdk.version.get().toInt()
         targetSdk = libs.versions.target.sdk.version.get().toInt()
-        namespace = "com.erolaksoy.composeimpression.app"
+        namespace = "com.erolaksoy.impression"
 
-        applicationId = "com.erolaksoy.composeimpression.app"
-        versionCode = 1
-        versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
 
-    buildFeatures {
-        compose = true
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
     compileOptions {
@@ -30,8 +28,25 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
+    buildFeatures {
+        compose = true
+        buildConfig = false
+    }
+
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.compilerextension.get()
+    }
+
+    lint {
+        warningsAsErrors = true
+        abortOnError = true
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
 
     buildTypes {
@@ -43,21 +58,26 @@ android {
             )
         }
     }
+}
 
-    lint {
-        warningsAsErrors = true
-        abortOnError = true
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                groupId = PUBLISHING_GROUP
+                artifactId = PUBLISHING_ARTIFACT_ID
+                version = VERSION
+
+                from(components["release"])
+            }
+        }
     }
 }
 
 dependencies {
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(projects.impression)
+    implementation(libs.androidx.appcompat)
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling)
     implementation(libs.compose.foundation)
     implementation(libs.compose.material)
-    implementation("androidx.compose.material3:material3:1.1.0")
 }
