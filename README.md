@@ -38,7 +38,7 @@ The `VisibilityPercentImpressionValidator` class can be used to validate impress
 
 To use `VisibilityPercentImpressionValidator`, first create an instance of it and pass it to the `ImpressionState` instance you created. You can set the visibility percentage threshold that you want to use to validate impressions.
 
-```
+```kotlin
 val impressionState = rememberImpressionState(lazyListState) {
     addValidator(VisibilityPercentImpressionValidator(0.5f)) // set the visibility percentage threshold to 50%
 }
