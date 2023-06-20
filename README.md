@@ -65,7 +65,7 @@ The following is a reference to the APIs provided by the code:
 allprojects {
     repositories {
         ...
-        maven { url '<https://jitpack.io>' }
+        maven { url 'https://jitpack.io' }
     }
 }
 
