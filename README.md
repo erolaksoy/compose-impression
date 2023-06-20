@@ -57,6 +57,31 @@ The following is a reference to the APIs provided by the code:
 - `VisibilityPercentImpressionValidator` class: A class that can validate impressions based on the visibility percentage of an item.
 - `impression` modifier: A modifier that can track impressions for specific items in a lazy list.
 
+## Including in your project
+
+1. Add the JitPack repository to your project-level `build.gradle` file:
+
+```
+allprojects {
+    repositories {
+        ...
+        maven { url '<https://jitpack.io>' }
+    }
+}
+
+```
+
+1. Add the dependency to your app-level `build.gradle` file:
+
+```
+dependencies {
+    implementation 'com.github.erolaksoy:compose-impression:0.1.0'
+}
+
+```
+
+1. Sync your project with Gradle files.
+
 ## Contributing
 
 Contributions are welcome! Please open a pull request on GitHub if you would like to contribute to the code.
