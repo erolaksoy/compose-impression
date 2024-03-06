@@ -5,7 +5,7 @@ import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
 
 class VisibilityPercentImpressionValidator(
-    @FloatRange(0.0, 1.0) private val visibilityPercentThreshold: Float,
+    @FloatRange(0.0, 1.0) private val visibilityPercentThreshold: Float = VISIBILITY_THRESHOLD,
 ) : ImpressionValidator {
 
     override suspend fun isValid(state: LazyListState, key: Any): Boolean {
@@ -23,6 +23,11 @@ class VisibilityPercentImpressionValidator(
     private fun LazyListState.visibilityPercent(itemInfo: LazyListItemInfo): Float {
         val start = (layoutInfo.viewportStartOffset - itemInfo.offset).coerceAtLeast(0)
         val end = (itemInfo.offset + itemInfo.size - layoutInfo.viewportEndOffset).coerceAtLeast(0)
-        return (1f - (start + end).toFloat() / itemInfo.size).coerceAtLeast(0f)
+        val visibleArea = maxOf(0f, (start + end).toFloat())
+        return 1f - (visibleArea / itemInfo.size.toFloat())
+    }
+
+    companion object {
+        private const val VISIBILITY_THRESHOLD = 0.5F
     }
 }

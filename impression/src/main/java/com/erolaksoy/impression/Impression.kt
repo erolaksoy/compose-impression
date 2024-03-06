@@ -2,13 +2,13 @@ package com.erolaksoy.impression
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.onGloballyPositioned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -25,15 +25,34 @@ fun <T : Any> Modifier.impression(
 
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(key) {
-        impressionState.seenEvent.collect {
-            if (key == it) {
-                onImpressionHappened(key)
+    DisposableEffect(key) {
+        val job = coroutineScope.launch {
+            impressionState.seenEvent.collect {
+                if (key == it) {
+                    onImpressionHappened(key)
+                }
             }
         }
+        onDispose { job.cancel() }
     }
 
-    onPlaced {
+    onGloballyPositioned {
+        coroutineScope.launch {
+            if (it.isAttached.not()) return@launch
+            impressionState.onItemPlaced(key = key)
+        }
+    }
+}
+
+@Stable
+fun <T : Any> Modifier.impression(
+    key: T,
+    impressionState: ImpressionState,
+) = composed {
+
+    val coroutineScope = rememberCoroutineScope()
+
+    onGloballyPositioned {
         coroutineScope.launch {
             if (it.isAttached.not()) return@launch
             impressionState.onItemPlaced(key = key)
@@ -44,11 +63,15 @@ fun <T : Any> Modifier.impression(
 @Composable
 fun rememberImpressionState(
     lazyListState: LazyListState,
-    block: ImpressionState.() -> Unit = {},
+    block: ImpressionState.() -> Unit = defaultImpressionStateBlock,
 ): ImpressionState {
     return remember {
         ImpressionStateImpl(lazyListState).apply(block)
     }
+}
+
+internal val defaultImpressionStateBlock: ImpressionState.() -> Unit = {
+    addValidator(VisibilityPercentImpressionValidator())
 }
 
 class ImpressionStateImpl(private val state: LazyListState) : ImpressionState {
@@ -63,8 +86,12 @@ class ImpressionStateImpl(private val state: LazyListState) : ImpressionState {
     override suspend fun onItemPlaced(key: Any) = withContext(Dispatchers.Default) {
         if (_recordedItems.contains(key)) return@withContext
 
-        val filteredList = state.layoutInfo.visibleItemsInfo.filter {
-            _validators.any { it.isValid(state, key) }
+        val visibleItemsInfo = state.layoutInfo.visibleItemsInfo
+
+        val filteredList = if (_validators.isEmpty()) {
+            visibleItemsInfo
+        } else {
+            visibleItemsInfo.filter { _validators.any { it.isValid(state, key) } }
         }
 
         val isItemInList = filteredList.any { it.key == key }
@@ -77,6 +104,10 @@ class ImpressionStateImpl(private val state: LazyListState) : ImpressionState {
 
     override fun addValidator(validator: ImpressionValidator) {
         _validators.add(validator)
+    }
+
+    override fun clearValidators() {
+        _validators.clear()
     }
 
     override fun clearAll() {

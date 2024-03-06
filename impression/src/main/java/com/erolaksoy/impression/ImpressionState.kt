@@ -29,6 +29,11 @@ interface ImpressionState {
     fun addValidator(validator: ImpressionValidator)
 
     /**
+     * Removes all validators from the impression state.
+     */
+    fun clearValidators()
+
+    /**
      * Clears all state from the impression state.
      */
     fun clearAll()
