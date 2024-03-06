@@ -2,7 +2,7 @@
 
 This library provides a way to track whether items appear on the screen in lazy lists.
 
-| <img src="./art/lazy-column-sample.gif" width=200/> | <img src="./art/lazy-row-sample.gif" width=200"/> |
+| <img src="./art/lazy-column-sample.gif" width=200/> | <img src="./art/lazy-row-sample.gif" width=200/>  |
 | --------------------------------------------------- | ------------------------------------------------- |
 | Lazy Column                                         | Lazy Row                                          |
 
