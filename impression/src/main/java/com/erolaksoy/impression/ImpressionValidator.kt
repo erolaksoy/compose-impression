@@ -1,6 +1,6 @@
 package com.erolaksoy.impression
 
-import androidx.compose.foundation.lazy.LazyListState
+import com.erolaksoy.impression.wrapper.LazyLayoutWrapper
 
 /**
  * This interface provides a method for determining whether an impression is valid.
@@ -14,5 +14,5 @@ interface ImpressionValidator {
      * @param key The key of the item to validate.
      * @return Whether the impression is valid.
      */
-    suspend fun isValid(state: LazyListState, key: Any): Boolean
+    suspend fun isValid(state: LazyLayoutWrapper, key: Any): Boolean
 }

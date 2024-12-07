@@ -1,6 +1,7 @@
 package com.erolaksoy.impression
 
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
@@ -9,6 +10,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.layout.onGloballyPositioned
+import com.erolaksoy.impression.wrapper.LazyGridStateWrapper
+import com.erolaksoy.impression.wrapper.LazyLayoutWrapper
+import com.erolaksoy.impression.wrapper.LazyListStateWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -66,7 +70,17 @@ fun rememberImpressionState(
     block: ImpressionState.() -> Unit = defaultImpressionStateBlock,
 ): ImpressionState {
     return remember {
-        ImpressionStateImpl(lazyListState).apply(block)
+        ImpressionStateImpl(LazyListStateWrapper(lazyListState)).apply(block)
+    }
+}
+
+@Composable
+fun rememberGridImpressionState(
+    state: LazyGridState,
+    block: ImpressionState.() -> Unit = defaultImpressionStateBlock,
+): ImpressionState {
+    return remember {
+        ImpressionStateImpl(LazyGridStateWrapper(state)).apply(block)
     }
 }
 
@@ -74,7 +88,7 @@ internal val defaultImpressionStateBlock: ImpressionState.() -> Unit = {
     addValidator(VisibilityPercentImpressionValidator())
 }
 
-class ImpressionStateImpl(private val state: LazyListState) : ImpressionState {
+class ImpressionStateImpl(private val state: LazyLayoutWrapper) : ImpressionState {
     private val _seenEvent = MutableSharedFlow<Any>(extraBufferCapacity = 1)
     override val seenEvent: SharedFlow<Any> = _seenEvent.asSharedFlow()
 
@@ -86,7 +100,7 @@ class ImpressionStateImpl(private val state: LazyListState) : ImpressionState {
     override suspend fun onItemPlaced(key: Any) = withContext(Dispatchers.Default) {
         if (_recordedItems.contains(key)) return@withContext
 
-        val visibleItemsInfo = state.layoutInfo.visibleItemsInfo
+        val visibleItemsInfo = state.visibleItems
 
         val filteredList = if (_validators.isEmpty()) {
             visibleItemsInfo
