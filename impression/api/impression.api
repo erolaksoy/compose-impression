@@ -1,0 +1,42 @@
+public final class com/erolaksoy/impression/ImpressionKt {
+	public static final fun impression (Landroidx/compose/ui/Modifier;Ljava/lang/Object;Lcom/erolaksoy/impression/ImpressionState;)Landroidx/compose/ui/Modifier;
+	public static final fun impression (Landroidx/compose/ui/Modifier;Ljava/lang/Object;Lcom/erolaksoy/impression/ImpressionState;Lkotlin/jvm/functions/Function1;)Landroidx/compose/ui/Modifier;
+	public static final fun rememberImpressionState (Landroidx/compose/foundation/lazy/LazyListState;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/erolaksoy/impression/ImpressionState;
+}
+
+public abstract interface class com/erolaksoy/impression/ImpressionState {
+	public abstract fun addValidator (Lcom/erolaksoy/impression/ImpressionValidator;)V
+	public abstract fun clearAll ()V
+	public abstract fun clearValidators ()V
+	public abstract fun getRecordedItems ()Ljava/util/Set;
+	public abstract fun getSeenEvent ()Lkotlinx/coroutines/flow/SharedFlow;
+	public abstract fun onItemPlaced (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/erolaksoy/impression/ImpressionStateImpl : com/erolaksoy/impression/ImpressionState {
+	public static final field $stable I
+	public fun <init> (Landroidx/compose/foundation/lazy/LazyListState;)V
+	public fun addValidator (Lcom/erolaksoy/impression/ImpressionValidator;)V
+	public fun clearAll ()V
+	public fun clearValidators ()V
+	public fun getRecordedItems ()Ljava/util/Set;
+	public fun getSeenEvent ()Lkotlinx/coroutines/flow/SharedFlow;
+	public fun onItemPlaced (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class com/erolaksoy/impression/ImpressionValidator {
+	public abstract fun isValid (Landroidx/compose/foundation/lazy/LazyListState;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/erolaksoy/impression/VisibilityPercentImpressionValidator : com/erolaksoy/impression/ImpressionValidator {
+	public static final field $stable I
+	public static final field Companion Lcom/erolaksoy/impression/VisibilityPercentImpressionValidator$Companion;
+	public fun <init> ()V
+	public fun <init> (F)V
+	public synthetic fun <init> (FILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun isValid (Landroidx/compose/foundation/lazy/LazyListState;Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/erolaksoy/impression/VisibilityPercentImpressionValidator$Companion {
+}
+

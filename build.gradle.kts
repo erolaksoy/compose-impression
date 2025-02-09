@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.detekt)
+    alias(libs.plugins.kotlin.binary.compatibility)
     id("org.jetbrains.kotlin.android") version "1.8.20" apply false
 }
 

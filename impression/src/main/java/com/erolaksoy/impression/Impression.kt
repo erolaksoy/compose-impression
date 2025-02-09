@@ -2,6 +2,7 @@ package com.erolaksoy.impression
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
@@ -13,6 +14,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import com.erolaksoy.impression.wrapper.LazyGridStateWrapper
 import com.erolaksoy.impression.wrapper.LazyLayoutWrapper
 import com.erolaksoy.impression.wrapper.LazyListStateWrapper
+import com.erolaksoy.impression.wrapper.LazyStaggeredGridStateWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -75,12 +77,22 @@ fun rememberImpressionState(
 }
 
 @Composable
-fun rememberGridImpressionState(
+fun rememberImpressionState(
     state: LazyGridState,
     block: ImpressionState.() -> Unit = defaultImpressionStateBlock,
 ): ImpressionState {
     return remember {
         ImpressionStateImpl(LazyGridStateWrapper(state)).apply(block)
+    }
+}
+
+@Composable
+fun rememberImpressionState(
+    state: LazyStaggeredGridState,
+    block: ImpressionState.() -> Unit = defaultImpressionStateBlock,
+): ImpressionState {
+    return remember {
+        ImpressionStateImpl(LazyStaggeredGridStateWrapper(state)).apply(block)
     }
 }
 

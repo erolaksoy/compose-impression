@@ -14,9 +14,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -76,11 +80,18 @@ fun PageContent(
     val list = remember { (0..100).toList() }
     val lazyListState = rememberLazyListState()
     val impressionState = rememberImpressionState(lazyListState)
+    val lazyGridState = rememberLazyGridState()
+    val gridImpressionState = rememberImpressionState(lazyGridState)
     val coroutineScope = rememberCoroutineScope()
 
     DisposableEffect(Unit) {
         coroutineScope.launch {
+            gridImpressionState.seenEvent.collectLatest {
+                println("grid impression $it")
+            }
+
             impressionState.seenEvent.collectLatest {
+                println(">>> impression $it")
                 lastSeenItem = it as Int
             }
         }
@@ -142,8 +153,8 @@ fun PageContent(
         when (selectedTab) {
             0 -> VerticalListSample(
                 list = list,
-                lazyListState = lazyListState,
-                impressionState = impressionState
+                lazyGridState = lazyGridState,
+                impressionState = gridImpressionState
             )
 
             1 -> HorizontalListSample(
@@ -159,21 +170,23 @@ fun PageContent(
 private fun VerticalListSample(
     modifier: Modifier = Modifier,
     list: List<Int>,
-    lazyListState: LazyListState,
+    lazyGridState: LazyGridState,
     impressionState: ImpressionState,
 ) {
-    LazyColumn(
+
+    LazyHorizontalGrid(
         modifier = modifier.fillMaxSize(),
-        state = lazyListState,
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        state = lazyGridState,
+        rows = GridCells.Fixed(2),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(list, key = { it }) {
             CardItem(
                 key = it,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
+                    .width(120.dp)
+                    .height(40.dp)
                     .impression(it, impressionState),
             )
         }
@@ -187,9 +200,16 @@ private fun HorizontalListSample(
     lazyListState: LazyListState,
     impressionState: ImpressionState,
 ) {
+    val listState = rememberLazyListState()
+    val state = rememberImpressionState(lazyListState = listState)
+    LaunchedEffect(Unit) {
+        state.seenEvent.collectLatest {
+            println(">>> $it")
+        }
+    }
     LazyRow(
         modifier = modifier.fillMaxSize(),
-        state = lazyListState,
+        state = listState,
         contentPadding = PaddingValues(16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -199,7 +219,7 @@ private fun HorizontalListSample(
                 modifier = Modifier
                     .width(250.dp)
                     .height(120.dp)
-                    .impression(it, impressionState),
+                    .impression(it, state),
             )
         }
     }
